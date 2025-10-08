@@ -1,8 +1,8 @@
 // src/app.js
 const express = require('express');
 const cors = require('cors');
-const restaurantsRouter = require('./models/restaurants.routes');
-const submissionsRouter = require('./models/submissions.routes');
+const restaurantsRouter = require('./routes/restaurants.routes');
+const submissionsRouter = require('./routes/submissions.routes');
 const notFound = require('./middleware/notFound.middleware');
 const errorHandler = require('./middleware/error.middleware');
 const mongoose = require('mongoose');
