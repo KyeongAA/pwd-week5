@@ -1,22 +1,38 @@
+// server.js
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+const { connectDB, closeDB } = require('./src/config/db');
+const createApp = require('./src/app');
+const { ensureSeededOnce } = require('./src/services/restaurants.service');
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+const app = createApp();
 
-app.get('/', (req, res) => {
-    res.send('✅ Server is running successfully!');
+async function start() {
+    try {
+        await connectDB(process.env.MONGODB_URI, process.env.DB_NAME);
+        await ensureSeededOnce();
+        if (require.main === module) {
+            app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+        }
+    } catch (err) {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    }
+}
+
+start();
+
+// graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('Received SIGINT, shutting down...');
+    await closeDB();
+    process.exit(0);
+});
+process.on('SIGTERM', async () => {
+    console.log('Received SIGTERM, shutting down...');
+    await closeDB();
+    process.exit(0);
 });
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ MongoDB connected successfully!'))
-    .catch(err => console.error('❌ MongoDB connection failed:', err));
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+module.exports = app;
