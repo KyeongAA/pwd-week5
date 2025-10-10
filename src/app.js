@@ -1,6 +1,10 @@
 // src/app.js
 const express = require('express');
 const cors = require('cors');
+app.use(cors({
+    origin: '*',
+    credentials: true,
+}));
 const restaurantsRouter = require('./routes/restaurants.routes');
 const submissionsRouter = require('./routes/submissions.routes');
 const notFound = require('./middleware/notFound.middleware');
