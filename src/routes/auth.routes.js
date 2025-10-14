@@ -3,6 +3,8 @@ const router = express.Router();
 
 // 회원가입
 router.post('/register', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+
     const { email, password, name } = req.body;
 
     if (!email || !password) {
@@ -25,6 +27,7 @@ router.post('/register', (req, res) => {
 
 // 로그인
 router.post('/login', (req, res) => {
+    res.set('Cache-Control', 'no-store');
     const { email, password } = req.body;
 
     if (email === 'test@test.com' && password === '1234') {
@@ -43,6 +46,8 @@ router.post('/login', (req, res) => {
 
 // ✅ 로그인 상태 확인
 router.get('/me', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+
     // 실제로는 쿠키나 토큰으로 인증해야 하지만, 지금은 mock 데이터로
     return res.json({
         success: true,
