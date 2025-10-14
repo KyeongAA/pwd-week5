@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const restaurantsRouter = require('./routes/restaurants.routes');
 const submissionsRouter = require('./routes/submissions.routes');
+const authRouter = require('./routes/auth.routes');
 const notFound = require('./middleware/notFound.middleware');
 const errorHandler = require('./middleware/error.middleware');
 const mongoose = require('mongoose');
@@ -46,6 +47,7 @@ function createApp() {
         res.json({ status: 'ok', db: state });
     });
 
+    app.use('/api/auth', authRouter);
     app.use('/api/restaurants', restaurantsRouter);
     app.use('/api/submissions', submissionsRouter);
 
