@@ -10,7 +10,27 @@ const mongoose = require('mongoose');
 function createApp() {
     const app = express();
 
-    app.use(cors());
+    // ✅ CORS 설정
+    const allowedOrigins = [
+        'http://localhost:5173',             // 로컬 개발용
+        'https://pwd-week6.netlify.app',     // Netlify 배포 도메인
+    ];
+
+    app.use(
+        cors({
+            origin: function (origin, callback) {
+                // 요청이 없는 경우 (예: Postman, 서버 내부 요청)
+                if (!origin) return callback(null, true);
+                if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                } else {
+                    return callback(new Error('Not allowed by CORS'));
+                }
+            },
+            credentials: true,
+        })
+    );
+
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
