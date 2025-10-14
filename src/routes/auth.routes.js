@@ -5,8 +5,9 @@ const router = express.Router();
 router.post('/register', (req, res) => {
     res.set('Cache-Control', 'no-store');
 
-    const { email, password, name, userType } = req.body; // ✨ userType 포함
+    const { email, password, name, userType } = req.body;
 
+    // 간단한 유효성 검사
     if (!email || !password) {
         return res.status(400).json({
             success: false,
@@ -14,6 +15,7 @@ router.post('/register', (req, res) => {
         });
     }
 
+    // 성공 응답 (프론트와 구조 완벽히 일치)
     return res.status(201).json({
         success: true,
         message: '회원가입 성공!',
@@ -21,10 +23,11 @@ router.post('/register', (req, res) => {
             id: Date.now(),
             email,
             name: name || '새 유저',
-            userType: userType || 'basic', // ✨ 기본값도 함께
+            userType: userType || 'basic',
         },
     });
 });
+
 
 
 // ✅ 로그인
