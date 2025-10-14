@@ -16,17 +16,23 @@ function createApp() {
         'https://pwd-week6.netlify.app',     // Netlify 배포 도메인
         'https://pwd-week6-client-phi.vercel.app/'
     ];
-
     app.use(
         cors({
             origin: function (origin, callback) {
-                // 요청이 없는 경우 (예: Postman, 서버 내부 요청)
+                // Postman, 서버 내부 요청 등 origin이 없는 경우 허용
                 if (!origin) return callback(null, true);
-                if (allowedOrigins.includes(origin)) {
+
+                // ✅ Vercel, Netlify 도메인 전체 허용
+                if (
+                    origin.includes('vercel.app') ||
+                    origin.includes('netlify.app') ||
+                    origin.includes('localhost')
+                ) {
                     return callback(null, true);
-                } else {
-                    return callback(new Error('Not allowed by CORS'));
                 }
+
+                // 나머지는 거부
+                return callback(new Error('Not allowed by CORS'));
             },
             credentials: true,
         })
