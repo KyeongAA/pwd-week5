@@ -14,6 +14,7 @@ function createApp() {
     const allowedOrigins = [
         'http://localhost:5173',             // 로컬 개발용
         'https://pwd-week6.netlify.app',     // Netlify 배포 도메인
+        'https://pwd-week6-client-phi.vercel.app/'
     ];
 
     app.use(
