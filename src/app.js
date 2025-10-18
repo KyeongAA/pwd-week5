@@ -1,29 +1,32 @@
 // src/app.js
+require('dotenv').config(); // ✅ .env 불러오기 (맨 위 추가)
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+
 const restaurantsRouter = require('./routes/restaurants.routes');
 const submissionsRouter = require('./routes/submissions.routes');
 const authRouter = require('./routes/auth.routes');
 const notFound = require('./middleware/notFound.middleware');
 const errorHandler = require('./middleware/error.middleware');
-const mongoose = require('mongoose');
 
 function createApp() {
     const app = express();
 
+    // ✅ MongoDB 연결
+    mongoose
+        .connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        .then(() => console.log('✅ MongoDB connected'))
+        .catch((err) => console.error('❌ MongoDB connection error:', err));
+
     // ✅ CORS 설정
-    const allowedOrigins = [
-        'http://localhost:5173',             // 로컬 개발용
-        'https://pwd-week6.netlify.app',     // Netlify 배포 도메인
-        'https://pwd-week6-client-phi.vercel.app/'
-    ];
     app.use(
         cors({
             origin: function (origin, callback) {
-                // Postman, 서버 내부 요청 등 origin이 없는 경우 허용
                 if (!origin) return callback(null, true);
-
-                // ✅ Vercel, Netlify 도메인 전체 허용
                 if (
                     origin.includes('vercel.app') ||
                     origin.includes('netlify.app') ||
@@ -31,8 +34,6 @@ function createApp() {
                 ) {
                     return callback(null, true);
                 }
-
-                // 나머지는 거부
                 return callback(new Error('Not allowed by CORS'));
             },
             credentials: true,
@@ -42,15 +43,18 @@ function createApp() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
+    // ✅ 연결 상태 테스트
     app.get('/health', (req, res) => {
-        const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+        const state = mongoose.connection.readyState; // 0~3
         res.json({ status: 'ok', db: state });
     });
 
+    // ✅ 라우트 등록
     app.use('/api/auth', authRouter);
     app.use('/api/restaurants', restaurantsRouter);
     app.use('/api/submissions', submissionsRouter);
 
+    // ✅ 에러 핸들러
     app.use(notFound);
     app.use(errorHandler);
 
